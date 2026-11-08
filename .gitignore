@@ -1,0 +1,19 @@
+# Ambienti virtuali
+.venv/
+venv/
+env/
+
+# File di cache di Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# File di output generati dal tool
+output_report.json
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/

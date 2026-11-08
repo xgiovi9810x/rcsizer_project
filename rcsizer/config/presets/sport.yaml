@@ -1,0 +1,14 @@
+aircraft_type: sport
+targets:
+  W_over_S_N_m2: [70, 110]
+  CLmax: [1.1, 1.4]
+  SM_pct: [8, 12]
+  V_H: [0.45, 0.60]
+  V_V: [0.03, 0.045]
+  n_limit: [6]
+defaults:
+  mission:
+    V_cruise: 22.0
+    altitude_ops: 150.0
+    takeoff_mode: runway
+    n_limit_target: 6.0

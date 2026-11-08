@@ -1,0 +1,16 @@
+aircraft_type: trainer
+targets:
+  W_over_S_N_m2: [50, 80]
+  CLmax: [1.2, 1.5]
+  SM_pct: [10, 15]
+  V_H: [0.50, 0.70]
+  V_V: [0.035, 0.05]
+  n_limit: [4, 5]
+defaults:
+  mission:
+    V_cruise: 15.0
+    altitude_ops: 100.0
+    takeoff_mode: hand_launch
+    n_limit_target: 4.5
+    wind_design: 3.0
+    payload_mass: 0.0

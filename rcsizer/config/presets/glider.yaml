@@ -1,0 +1,14 @@
+aircraft_type: glider
+targets:
+  W_over_S_N_m2: [25, 60]
+  CLmax: [1.1, 1.5]
+  SM_pct: [5, 12]
+  V_H: [0.40, 0.60]
+  V_V: [0.025, 0.045]
+  n_limit: [-7, 7]
+defaults:
+  mission:
+    V_cruise: 12.0
+    altitude_ops: 200.0
+    takeoff_mode: hand_launch
+    n_limit_target: 7.0

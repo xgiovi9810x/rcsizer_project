@@ -1,0 +1,56 @@
+# Coefficienti empirici [E] — nessuna costante magica nel codice.
+coefficients:
+  S_wet_w_factor:
+    value: 2.5
+    source: "sez. 4.2"
+    range: [2.2, 2.8]
+    confidence: low
+    kind: E
+  k_roughness:
+    value: 0.20
+    source: "sez. 4.4"
+    range: [0.10, 0.30]
+    confidence: low
+    kind: E
+  CD_misc_fraction:
+    value: 0.10
+    source: "sez. 4.4"
+    range: [0.05, 0.15]
+    confidence: low
+    kind: E
+  eta_h:
+    value: 0.90
+    source: "sez. 4.5"
+    range: [0.85, 1.0]
+    confidence: low
+    kind: E
+  gamma_buckling:
+    value: 0.30
+    source: "sez. 4.9"
+    range: [0.2, 0.4]
+    confidence: low
+    kind: E
+  tau_elevator:
+    value: 0.50
+    source: "sez. 4.5"
+    range: [0.4, 0.6]
+    confidence: low
+    kind: E
+  launch_n_factor:
+    value: 4.0
+    source: "sez. 4.9"
+    range: [3, 6]
+    confidence: low
+    kind: E
+  e_oswald_raymer:
+    value: 0.85
+    source: "sez. 4.4 (approssimazione)"
+    range: [0.7, 0.95]
+    confidence: low
+    kind: E
+  eta_h:
+    value: 0.90
+    source: "sez. 4.5 (aerei a motore)"
+    range: [0.60, 1.0]
+    confidence: medium
+    kind: E

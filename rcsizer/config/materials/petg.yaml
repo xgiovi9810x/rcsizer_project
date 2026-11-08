@@ -1,0 +1,12 @@
+name: PETG
+rho_filament: 1270.0
+E_xy: 2.1e9
+E_z: 1.9e9
+sigma_y_xy: 50e6
+sigma_y_z: 30e6
+G: 0.8e9
+nu: 0.40
+T_glass: 353.15
+flow_factor: 1.0
+density_foam_factor: 1.0
+source: "letteratura stampa 3D [E]"

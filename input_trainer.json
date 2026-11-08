@@ -1,0 +1,58 @@
+{
+  "aircraft_type": "trainer",
+  "mission": {
+    "V_cruise": 15.0,
+    "altitude_ops": 100.0,
+    "takeoff_mode": "hand_launch",
+    "n_limit_target": 4.5
+  },
+  "wing": {
+    "panels": [{
+      "span": 0.5,
+      "chord_root": 0.25,
+      "chord_tip": 0.18,
+      "sweep_LE": 0.0,
+      "airfoil_root": "NACA2412",
+      "airfoil_tip": "NACA2412"
+    }],
+    "internal_structure": {
+      "carbon_tube_outer_d": 0.004,
+      "carbon_tube_inner_d": 0.003,
+      "truss_angle": 0.7854
+    }
+  },
+    "tail": {
+    "tail_config": "conventional",
+    "S_h": 0.05,
+    "l_h": 0.6,
+    "AR_h": 4.0,
+    "incidence_h": 0.0,
+    "S_v": 0.02,
+    "l_v": 0.6,
+    "AR_v": 2.0
+  },
+  "fuselage": {
+    "L_f": 1.0,
+    "sections": [
+      { "x": 0.0, "width": 0.10, "height": 0.12 },
+      { "x": 1.0, "width": 0.05, "height": 0.06 }
+    ],
+    "wing_position": 0.3,
+    "tail_position": 0.9
+  },
+  "material": "pla",
+  "print_process": {
+    "nozzle": 0.0004,
+    "w_e": 0.00045,
+    "layer_h": 0.0002,
+    "build_volume": [0.22, 0.22, 0.25]
+  },
+  "propulsion": {
+    "motor": { "P_max": 300.0, "mass": 0.05 },
+    "battery": {
+      "cells_S": 3, "cells_P": 1,
+      "capacity_Ah": 1.5, "voltage_nominal": 11.1,
+      "mass": 0.12, "C_rate_max": 30.0
+    }
+  }
+}

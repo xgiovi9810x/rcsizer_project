@@ -1,0 +1,12 @@
+name: PLA
+rho_filament: 1240.0
+E_xy: 3.5e9
+E_z: 2.5e9
+sigma_y_xy: 50e6
+sigma_y_z: 25e6
+G: 1.3e9
+nu: 0.35
+T_glass: 328.15
+flow_factor: 1.0
+density_foam_factor: 1.0
+source: "letteratura stampa 3D [E]"

@@ -1,0 +1,15 @@
+pipeline:
+  - airfoil:      {impl: airfoil_dat}
+  - geometry:     {impl: geometry_trapezoid}
+  - aero:         {impl: aero_datcom}
+  - stability:    {impl: stability_classic}
+  - lateral:      {impl: stability_lateral}   
+  - structure:    {impl: structure_vasem_shell}
+  - weights:      {impl: weights_table}
+  - performance:  {impl: performance_basic}
+  - constraints:  {impl: constraint_checker}
+  - export:       {impl: export_params_table}
+loop:
+  variables: [weights.W, weights.h_cg]
+  tolerance: {weights.W: 1e-3, weights.h_cg: 5e-4}
+  max_iter: 30

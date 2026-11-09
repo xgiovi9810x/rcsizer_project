@@ -29,12 +29,11 @@ The tool is built on a self-discovering plugin architecture, allowing engineers 
 
 ---
 
-## Prerequisites
+## Technical Prerequisites
 
 Before installing, ensure you have:
 *   **Python 3.11** or higher installed.
 *   **Git** installed on your system.
-*   A basic understanding of 3D printing (vase mode, extrusion widths) and RC aircraft terminology.
 
 ## Installation
 
@@ -69,7 +68,7 @@ RCSizer separates the *physics code* from the *empirical constants*.
 *   **`rcsizer/config/coefficients.yaml`**: All empirical coefficients (form factors, safety factors, material knockdowns, etc.) live here. You can tune these values based on your own 3D printing tests without changing a single line of Python code.
 *   **`rcsizer/config/materials/`**: Define your filaments (PLA, PETG, LW-PLA) with their specific densities, moduli, and interlayer strengths.
 *   **`rcsizer/config/presets/`**: Default targets and bands for different aircraft types (Trainer, Glider, Sport).
-*   **`data/airfoils/`**: Drop your `.dat` airfoil coordinate files here.
+*   **`data/airfoils/`**: Drop your `.dat` airfoil coordinate (Selig) files here.
 
 ## Architecture
 

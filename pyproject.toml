@@ -11,6 +11,7 @@ dependencies = [
     "pyyaml>=6.0",
     "pytest>=7.4",
     "numpy>=2.5.0",
+    "streamlit>=1.30",
 ]
 
 [tool.pytest.ini_options]

@@ -12,6 +12,8 @@ dependencies = [
     "pytest>=7.4",
     "numpy>=2.5.0",
     "streamlit>=1.30",
+    "plotly>=7.1.0",
+    "pandas>=3.1.1"
 ]
 
 [tool.pytest.ini_options]

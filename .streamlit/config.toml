@@ -1,6 +1,7 @@
 [theme]
-primaryColor = "#1f77b4"    # Il blu che abbiamo usato per il grafico dell'ala
-backgroundColor = "#ffffff"
-secondaryBackgroundColor = "#f0f2f6"
-textColor = "#31333F"
+base = "dark"
+primaryColor = "#00E5FF"            # Un ciano elettrico per bottoni e slider
+backgroundColor = "#0E1117"         # Sfondo principale (quasi nero)
+secondaryBackgroundColor = "#161B22" # Sfondo della sidebar e dei tab
+textColor = "#C9D1D9"               # Testo bianco sporco (più riposante del bianco puro)
 font = "sans serif"

@@ -2,7 +2,7 @@ import math
 from rcsizer.core.state import DesignState
 
 name = "structure_vasem_shell"
-version = "5.1.0"
+version = "6.0.0"
 requires = ["input", "geometry", "airfoil"]
 provides = ["structure"]
 
@@ -13,11 +13,8 @@ def run(state: DesignState) -> DesignState:
     mission = state.input.mission
     wing = state.input.wing
     
-    w_dict = state.derived.get("weights", {})
-    W = w_dict.get("W", 15.0)
-    
-    af_dict = state.derived.get("airfoil", {})
-    t_c = af_dict.get("thickness", 0.12)
+    W = state.derived.get("weights", {}).get("W", 15.0)
+    t_c = state.derived.get("airfoil", {}).get("thickness", 0.12)
     
     n_limit = mission.n_limit_target
     FOS = 2.0
@@ -41,7 +38,8 @@ def run(state: DesignState) -> DesignState:
         m_carb_tube = A_tube * b * 1600.0
         
         E_carb = 70e9 
-        I_skin_equiv = (math.pi * proc.w_e * (h_max**3)) / 4.0
+        # FIX P0 - D2: I_shell calcolato correttamente (diviso 8)
+        I_skin_equiv = (math.pi * proc.w_e * (h_max**3)) / 8.0
         E_skin = mat.E_xy
         
         stiffness_carb = E_carb * I_carb
@@ -53,11 +51,13 @@ def run(state: DesignState) -> DesignState:
     
     M_skin = M_root - M_carb
     
-    I_skin_equiv = (math.pi * proc.w_e * (h_max**3)) / 4.0
+    # FIX P0 - D2: I_shell corretto
+    I_skin_equiv = (math.pi * proc.w_e * (h_max**3)) / 8.0
     sigma_applied = (M_skin * (h_max / 2.0)) / I_skin_equiv if I_skin_equiv > 0 else 0
     sigma_allow = mat.sigma_y_xy * 0.5 
     MS_strength = (sigma_allow / (FOS * sigma_applied)) - 1.0 if sigma_applied > 0 else 999
     
+    # Calcolo spaziatura massima (basata sul buckling limite)
     k_c = 4.0
     nu = mat.nu
     if sigma_applied > 0:
@@ -66,39 +66,35 @@ def run(state: DesignState) -> DesignState:
     else:
         b_max_buckling = 0.1
         
+    actual_spacing = max(b_max_buckling, 0.015) 
+    
+    # FIX P0 - D2: Calcolo del vero margine di buckling usando la spaziatura scelta
+    sigma_cr = k_c * (math.pi**2) * mat.E_xy / (12 * (1 - nu**2)) * ((proc.w_e / actual_spacing)**2)
+    MS_buckling = (sigma_cr / (FOS * sigma_applied)) - 1.0 if sigma_applied > 0 else 999
+    
+    # Delaminazione
     tau_applied = V_root / (proc.w_e * h_max) if h_max > 0 else 0
     tau_allow = mat.sigma_y_z * 0.5
     MS_delam = (tau_allow / (FOS * tau_applied)) - 1.0 if tau_applied > 0 else 999
     
+    # Massa
     A_wall_outer = (2 * MAC * 1.1) * b
     m_outer_skin = mat.rho_filament * A_wall_outer * proc.w_e
-    
-    actual_spacing = max(b_max_buckling, 0.015) 
     N_bays = b / actual_spacing
     N_ribs = N_bays + 1
-    
     V_ribs = N_ribs * (MAC * h_max * proc.w_e)
     L_diag = math.sqrt(actual_spacing**2 + h_max**2)
     V_diag = N_bays * 2 * (L_diag * proc.w_e * h_max) 
-    
     m_truss = (V_ribs + V_diag) * mat.rho_filament
     m_wing_total = m_outer_skin + m_truss
     m_tail = m_wing_total * 0.15 
     
     new_state = state.with_derived(
         "structure",
-        m_wing=m_wing_total,
-        m_carb_tube=m_carb_tube,
-        m_tail=m_tail,
-        m_truss=m_truss,
-        t_w=proc.w_e,
-        M_root=M_root,
-        M_carb=M_carb,
-        sigma_applied=sigma_applied,
-        MS_strength=MS_strength,
-        MS_buckling=MS_delam, 
+        m_wing=m_wing_total, m_carb_tube=m_carb_tube, m_tail=m_tail,
+        t_w=proc.w_e, M_root=M_root, M_carb=M_carb, sigma_applied=sigma_applied,
+        MS_strength=MS_strength, MS_buckling=MS_buckling, MS_delam=MS_delam,
         rib_spacing_max_mm=round(actual_spacing * 1000, 1),
-        delamination_safe=bool(MS_delam > 0) # <-- FIX
+        delamination_safe=bool(MS_delam > 0)
     )
-    
     return new_state

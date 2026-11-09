@@ -106,6 +106,9 @@ class Pipeline:
     def _run_fixed_point(self, state: DesignState, loop: LoopConfig) -> DesignState:
         prev_vals: dict[str, float] = {}
         for it in range(loop.max_iter):
+            # FIX P1 - B4: Pulisce i warning vecchi prima di ogni giro
+            state = state.model_copy(update={"warnings": ()})
+            
             state = self.run_once(state).with_iteration(it)
             cur_vals: dict[str, float] = {}
             for var in loop.variables:

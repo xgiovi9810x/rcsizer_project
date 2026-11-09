@@ -1,56 +1,87 @@
-# Coefficienti empirici [E] — nessuna costante magica nel codice.
+# Coefficienti empirici [E] - Tutte le costanti magiche sono qui.
 coefficients:
-  S_wet_w_factor:
-    value: 2.5
-    source: "sez. 4.2"
-    range: [2.2, 2.8]
-    confidence: low
-    kind: E
-  k_roughness:
-    value: 0.20
-    source: "sez. 4.4"
-    range: [0.10, 0.30]
-    confidence: low
-    kind: E
-  CD_misc_fraction:
-    value: 0.10
-    source: "sez. 4.4"
-    range: [0.05, 0.15]
-    confidence: low
-    kind: E
-  eta_h:
-    value: 0.90
-    source: "sez. 4.5"
-    range: [0.85, 1.0]
-    confidence: low
-    kind: E
-  gamma_buckling:
-    value: 0.30
-    source: "sez. 4.9"
-    range: [0.2, 0.4]
-    confidence: low
-    kind: E
-  tau_elevator:
-    value: 0.50
-    source: "sez. 4.5"
-    range: [0.4, 0.6]
-    confidence: low
-    kind: E
-  launch_n_factor:
-    value: 4.0
-    source: "sez. 4.9"
-    range: [3, 6]
-    confidence: low
-    kind: E
+  # --- AERODINAMICA ---
   e_oswald_raymer:
     value: 0.85
-    source: "sez. 4.4 (approssimazione)"
+    source: "sez. 4.4"
     range: [0.7, 0.95]
     confidence: low
     kind: E
+  kappa_2d_lift_slope:
+    value: 0.90
+    source: "sez. 4.4 (correzione Re bassi)"
+    range: [0.85, 0.95]
+    confidence: low
+    kind: E
+  clmax_3d_factor:
+    value: 0.90
+    source: "sez. 4.4 (effetto 3D su cl_max)"
+    range: [0.8, 0.95]
+    confidence: low
+    kind: E
+  cd0_misc_factor:
+    value: 1.20
+    source: "sez. 4.4 (fusoliera, carrello, interferenze)"
+    range: [1.10, 1.35]
+    confidence: low
+    kind: E
+    
+  # --- STABILITA' ---
   eta_h:
     value: 0.90
-    source: "sez. 4.5 (aerei a motore)"
+    source: "sez. 4.5"
     range: [0.60, 1.0]
     confidence: medium
+    kind: E
+  downwash_factor:
+    value: 2.0
+    source: "sez. 4.5 (d_eps/d_alpha)"
+    range: [1.5, 2.5]
+    confidence: low
+    kind: E
+
+  # --- STRUTTURA ---
+  fos:
+    value: 2.0
+    source: "sez. 4.9 (Fattore di Sicurezza)"
+    range: [1.5, 2.0]
+    confidence: high
+    kind: E
+  knockdown_layer:
+    value: 0.50
+    source: "sez. 4.9 (adesione tra strati)"
+    range: [0.3, 0.6]
+    confidence: low
+    kind: E
+  carbon_density:
+    value: 1600.0
+    source: "sez. 4.8 (fibra di carbonio)"
+    range: [1500, 1700]
+    confidence: high
+    kind: E
+  carbon_E:
+    value: 70000000000.0
+    source: "sez. 4.9 (modulo elastico carbonio)"
+    range: [60000000000.0, 80000000000.0]
+    confidence: high
+    kind: E
+  k_c_buckling:
+    value: 4.0
+    source: "sez. 4.9 (pannello appoggiato)"
+    range: [4.0, 6.0]
+    confidence: high
+    kind: E
+  min_rib_spacing:
+    value: 0.015
+    source: "limite pratico di stampa"
+    range: [0.010, 0.020]
+    confidence: high
+    kind: E
+
+  # --- PESI ---
+  tail_mass_factor:
+    value: 0.15
+    source: "stima: la coda pesa il 15% dell'ala"
+    range: [0.10, 0.20]
+    confidence: low
     kind: E

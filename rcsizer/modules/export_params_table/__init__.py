@@ -1,7 +1,8 @@
 from rcsizer.core.state import DesignState
+import math
 
 name = "export_params_table"
-version = "3.2.0"
+version = "4.0.0"
 requires = ["input", "geometry", "aero", "stability", "lateral", "structure", "weights", "performance", "constraints"]
 provides = ["export"]
 
@@ -15,13 +16,20 @@ def run(state: DesignState) -> DesignState:
     cons = state.derived.get("constraints", {})
     lat = state.derived.get("lateral", {})
     
+    # FIX P0 - B3: uso .get() per evitare crash se sweep_LE è None
+    sweep_le_deg = 0.0
+    if "sweep_LE" in geo:
+        sweep_le_deg = geo["sweep_LE"] * (180/math.pi)
+    elif state.input.wing.panels[0].sweep_LE is not None:
+        sweep_le_deg = state.input.wing.panels[0].sweep_LE * (180/math.pi)
+    
     cad_params = {
         "Ala": {
             "Apertura_b_mm": round(geo["b"] * 1000, 1),
-            "Corda_Radice_mm": round(state.input.wing.panels[0].chord_root * 1000, 1),
-            "Corda_Punta_mm": round(state.input.wing.panels[0].chord_tip * 1000, 1),
+            "Corda_Radice_mm": round(geo.get("c_r", 0) * 1000, 1),
+            "Corda_Punta_mm": round(geo.get("c_t", 0) * 1000, 1),
             "MAC_mm": round(geo["MAC"] * 1000, 1),
-            "Freccia_LE_gradi": round(state.input.wing.panels[0].sweep_LE * (180/3.14159), 1),
+            "Freccia_LE_gradi": round(sweep_le_deg, 1),
             "Diedro_Attuale_gradi": round(lat.get("dihedral_actual_deg", 0.0), 1),
             "Diedro_Consigliato_gradi": round(lat.get("dihedral_recommended_deg", 0.0), 1),
             "Svergolamento_Consigliato_gradi": round(lat.get("twist_recommended_deg", 0.0), 1),
@@ -52,8 +60,9 @@ def run(state: DesignState) -> DesignState:
         },
         "Verifiche_Strutturali": {
             "Sforzo_Applicato_MPa": round(struct.get("sigma_applied", 0) / 1e6, 2),
-            "Margine_Sicurezza_Resistenza": round(struct.get("MS_strength", 0), 2),
-            "Margine_Sicurezza_Buckling": round(struct.get("MS_buckling", 0), 2),
+            "Margine_Resistenza": round(struct.get("MS_strength", 0), 2),
+            "Margine_Buckling": round(struct.get("MS_buckling", 0), 2),
+            "Margine_Delaminazione": round(struct.get("MS_delam", 0), 2),
             "Massa_Guscio_e_Reticolo_g": round(struct.get("m_wing", 0) * 1000, 1),
             "Massa_Tubo_Carbonio_g": round(struct.get("m_carb_tube", 0.0) * 1000, 1)
         },
@@ -63,17 +72,11 @@ def run(state: DesignState) -> DesignState:
             "Volume_Coda_Verticale_V_V": round(lat.get("V_V", 0.0), 3)
         },
         "Vincoli_Progetto": {
-            "Progetto_Valido": bool(cons.get("is_valid", True)), # <-- FIX
+            "Progetto_Valido": bool(cons.get("is_valid", True)),
             "Violazioni": cons.get("violations", []),
             "Consigli": cons.get("advices", [])
         }
     }
     
-    new_state = state.with_derived(
-        "export",
-        cad_parameters=cad_params,
-        report=report,
-        success=True
-    )
-    
+    new_state = state.with_derived("export", cad_parameters=cad_params, report=report, success=True)
     return new_state

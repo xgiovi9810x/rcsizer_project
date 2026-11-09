@@ -11,7 +11,6 @@ from rcsizer.core.registry import ModuleRegistry
 CONFIG = Path(__file__).parent / "config" / "pipeline.yaml"
 
 def print_beautiful_report(state) -> None:
-    """Stampa un riepilogo testuale dei risultati principali."""
     d = state.derived
     geo = d.get("geometry", {})
     w = d.get("weights", {})
@@ -26,30 +25,30 @@ def print_beautiful_report(state) -> None:
     print("  RCSIZER - REPORT DI DIMENSIONAMENTO PRELIMINARE")
     print(f"{line}\n")
 
-    # 1. GEOMETRIA E PESI
     print(" [1] GEOMETRIA E PESI")
     print(f"     Area Alare:      {geo.get('S', 0):.3f} m²")
     print(f"     Apertura:        {geo.get('b', 0):.3f} m")
     print(f"     MAC:             {geo.get('MAC', 0):.3f} m")
-    print(f"     Allungamento AR: {geo.get('AR', 0):.1f}")
     print(f"     Peso Totale:     {w.get('m_tot', 0) * 1000:.1f} g")
     print(f"     Carico Alare:    {(w.get('m_tot', 0) * 1000) / (geo.get('S', 1) * 100):.1f} g/dm²")
 
-    # 2. AERODINAMICA E STABILITA'
     print("\n [2] AERODINAMICA E STABILITA'")
     print(f"     Neutral Point:   {stab.get('h_n', 0) * 100:.1f} % MAC")
     print(f"     CG Target:       {stab.get('h_cg_target', 0) * 100:.1f} % MAC  ({stab.get('h_cg_target', 0) * geo.get('MAC', 0) * 1000:.1f} mm dal LE)")
     print(f"     CG Attuale:      {w.get('h_cg', 0) * 100:.1f} % MAC")
     print(f"     Margine Statico: {stab.get('SM', 0) * 100:.1f} %")
-    print(f"     Vel. Stallo:     {aero.get('Vs', 0) * 3.6:.1f} km/h")
-    print(f"     Efficienza L/D:  {aero.get('L_D_max', 0):.1f}")
-
-    # 3. STABILITA' LATERALE (CONSIGLI)
+    
+    # --- AGGIUNTO: IL CONSIGLIO SULLA BATTERIA ---
+    x_batt_sugg = w.get('x_batt_suggested', 0)
+    if x_batt_sugg > 0:
+        print(f"\n     >> CONSIGLIO BILANCIAMENTO:")
+        print(f"        Sposta la batteria a {x_batt_sugg * 1000:.0f} mm dal muso")
+        print(f"        (Attuale: {state.input.propulsion.battery.x_pos * 1000:.0f} mm)")
+    
     print("\n [3] CONSIGLI STABILITA' LATERALE")
     print(f"     Diedro Consigliato:       {lat.get('dihedral_recommended_deg', 0):.1f}°")
     print(f"     Svergolamento (Washout):  {lat.get('twist_recommended_deg', 0):.1f}°")
 
-    # 4. STRUTTURA
     print("\n [4] STRUTTURA (VASE MODE)")
     print(f"     Spaziatura Max Centine:   {struct.get('rib_spacing_max_mm', 0):.1f} mm")
     print(f"     Peso Guscio/Reticolo:     {struct.get('m_wing', 0) * 1000:.1f} g")
@@ -57,7 +56,6 @@ def print_beautiful_report(state) -> None:
     print(f"     Margine Resistenza:       {struct.get('MS_strength', 0):.2f}")
     print(f"     Margine Buckling:         {struct.get('MS_buckling', 0):.2f}")
     
-    # 5. VERDETTO FINALE
     print(f"\n{line}")
     is_valid = cons.get("is_valid", True)
     if is_valid:

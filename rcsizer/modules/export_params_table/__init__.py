@@ -46,7 +46,10 @@ def run(state: DesignState) -> DesignState:
         },
         "Bilanciamento": {
             "CG_Target_mm_dal_LE": round(stab["h_cg_target"] * geo["MAC"] * 1000, 1),
-            "Margine_Statico_Percentuale": round((stab["h_n"] - stab["h_cg_target"]) * 100, 1),
+                        "Margine_Statico_Percentuale": round((stab["h_n"] - stab["h_cg_target"]) * 100, 1),
+                        "Posizione_Batteria_Suggerita_mm": round(w.get("x_batt_suggested", 0) * 1000, 1),
+                        "Spostamento_Batteria_mm": round(w.get("delta_x_batt", 0) * 1000, 1),
+                        "Posizione_Batteria_Valida": bool(w.get("is_batt_valid", True))
         }
     }
     

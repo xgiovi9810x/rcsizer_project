@@ -48,12 +48,17 @@
     "layer_h": 0.0002,
     "build_volume": [0.22, 0.22, 0.25]
   },
-  "propulsion": {
-    "motor": { "P_max": 500.0, "mass": 0.15 },
+    "propulsion": {
+    "motor": { 
+        "P_max": 500.0, 
+        "mass": 0.15,
+        "x_pos": 0.05
+    },
     "battery": {
       "cells_S": 3, "cells_P": 1,
       "capacity_Ah": 2.2, "voltage_nominal": 11.1,
-      "mass": 0.18, "C_rate_max": 30.0
+      "mass": 0.18, "C_rate_max": 30.0,
+      "x_pos": 0.35
     },
     "ESC_mass": 0.04,
     "receiver_mass": 0.02

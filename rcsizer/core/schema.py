@@ -204,6 +204,7 @@ class MotorInput(BaseModel):
     P_max: float = Field(gt=0)
     kV: Optional[float] = Field(default=None, gt=0)
     mass: Mass = Field(gt=0)
+    x_pos: Length = Field(default=0.05, ge=0)
     thrust_static: Optional[float] = Field(default=None, ge=0)
     prop_D: Optional[Length] = Field(default=None, gt=0)
     prop_pitch: Optional[Length] = Field(default=None, gt=0)
@@ -216,6 +217,7 @@ class BatteryInput(BaseModel):
     capacity_Ah: float = Field(gt=0)
     voltage_nominal: float = Field(gt=0)
     mass: Mass = Field(gt=0)
+    x_pos: Length = Field(default=0.15, ge=0)
     usable_fraction: float = Field(default=0.8, gt=0, le=1)
     C_rate_max: float = Field(gt=0)
 
@@ -224,6 +226,7 @@ class ServoInput(BaseModel):
     model_config = _FROZEN
     count: int = Field(ge=0)
     mass_each: Mass = Field(ge=0)
+    x_pos: Length = Field(default=0.25, ge=0)
     torque: Optional[float] = Field(default=None, ge=0)
 
 

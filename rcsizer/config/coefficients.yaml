@@ -22,7 +22,7 @@ coefficients:
   cd0_misc_factor:
     value: 1.20
     source: "sez. 4.4 (fusoliera, carrello, interferenze)"
-    range: [1.10, 1.35]
+    range: [1.50, 1.80]
     confidence: low
     kind: E
     

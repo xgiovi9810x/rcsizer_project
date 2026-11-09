@@ -42,7 +42,7 @@ It is highly recommended to use a virtual environment to avoid dependency confli
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/YOUR_USERNAME/rcsizer_project.git
+git clone https://github.com/xgiovi9810x/rcsizer_project
 cd rcsizer_project
 ```
 

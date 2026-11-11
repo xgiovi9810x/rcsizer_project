@@ -2,7 +2,7 @@ from rcsizer.core.state import DesignState
 import math
 
 name = "export_params_table"
-version = "4.0.0"
+version = "5.0.0"
 requires = ["input", "geometry", "aero", "stability", "lateral", "structure", "weights", "performance", "constraints"]
 provides = ["export"]
 
@@ -15,64 +15,64 @@ def run(state: DesignState) -> DesignState:
     perf = state.derived.get("performance", {})
     cons = state.derived.get("constraints", {})
     lat = state.derived.get("lateral", {})
+    inp = state.input
     
-    # FIX P0 - B3: uso .get() per evitare crash se sweep_LE è None
-    sweep_le_deg = 0.0
-    if "sweep_LE" in geo:
-        sweep_le_deg = geo["sweep_LE"] * (180/math.pi)
-    elif state.input.wing.panels[0].sweep_LE is not None:
-        sweep_le_deg = state.input.wing.panels[0].sweep_LE * (180/math.pi)
+    # Calcoli per impennaggi
+    tail = inp.tail
+    tail_scaled = state.derived.get("tail_scaled", {})
+    S_h = tail_scaled.get("S_h", 0.05)
+    AR_h = tail.AR_h or 4.0
+    b_h = math.sqrt(S_h * AR_h)
     
+    S_v = tail_scaled.get("S_v", 0.02)
+    AR_v = tail.AR_v or 2.0
+    h_v = math.sqrt(S_v * AR_v)
+
     cad_params = {
         "Ala": {
             "Apertura_b_mm": round(geo["b"] * 1000, 1),
             "Corda_Radice_mm": round(geo.get("c_r", 0) * 1000, 1),
             "Corda_Punta_mm": round(geo.get("c_t", 0) * 1000, 1),
             "MAC_mm": round(geo["MAC"] * 1000, 1),
-            "Freccia_LE_gradi": round(sweep_le_deg, 1),
-            "Diedro_Attuale_gradi": round(lat.get("dihedral_actual_deg", 0.0), 1),
+            "Freccia_LE_gradi": round(geo.get("sweep_LE", 0.0) * (180/math.pi), 1),
             "Diedro_Consigliato_gradi": round(lat.get("dihedral_recommended_deg", 0.0), 1),
             "Svergolamento_Consigliato_gradi": round(lat.get("twist_recommended_deg", 0.0), 1),
             "Spaziatura_Max_Centine_mm": struct.get("rib_spacing_max_mm", 0)
         },
-        "Impennaggi": {
-            "Area_Coda_Orizzontale_mm2": round(stab.get("S_h", 0) * 1e6, 1),
-            "Braccio_Coda_Orizz_mm": round(stab.get("l_h", 0) * 1000, 1),
+        "Fusoliera": {
+            "Lunghezza_L_f_mm": round(inp.fuselage.L_f * 1000, 1),
+            "Posizione_Ala_dal_Muso_mm": round(inp.fuselage.wing_position * inp.fuselage.L_f * 1000, 1),
+            "Larghezza_Max_mm": round(max(sec.width for sec in inp.fuselage.sections) * 1000, 1),
+            "Altezza_Max_mm": round(max(sec.height for sec in inp.fuselage.sections) * 1000, 1)
+        },
+        "Coda_Orizzontale": {
+            "Area_mm2": round(S_h * 1e6, 1),
+            "Apertura_mm": round(b_h * 1000, 1),
+            "Braccio_l_h_mm": round(tail_scaled.get("l_h", 0) * 1000, 1),
+            "Corda_Radice_Stimata_mm": round((S_h / (b_h * 0.8)) * 1000, 1) # Stima grezza per AR
+        },
+        "Coda_Verticale": {
+            "Area_mm2": round(S_v * 1e6, 1),
+            "Altezza_mm": round(h_v * 1000, 1),
+            "Braccio_l_v_mm": round(tail_scaled.get("l_v", 0) * 1000, 1)
         },
         "Stampa_3D": {
             "Spessore_Parete_mm": round(struct.get("t_w", 0) * 1000, 2),
-            "Nozzle_mm": round(state.input.print_process.nozzle * 1000, 2),
-            "Layer_Height_mm": round(state.input.print_process.layer_h * 1000, 2),
+            "Nozzle_mm": round(inp.print_process.nozzle * 1000, 2),
+            "Layer_Height_mm": round(inp.print_process.layer_h * 1000, 2),
         },
         "Bilanciamento": {
             "CG_Target_mm_dal_LE": round(stab["h_cg_target"] * geo["MAC"] * 1000, 1),
-                        "Margine_Statico_Percentuale": round((stab["h_n"] - stab["h_cg_target"]) * 100, 1),
-                        "Posizione_Batteria_Suggerita_mm": round(w.get("x_batt_suggested", 0) * 1000, 1),
-                        "Spostamento_Batteria_mm": round(w.get("delta_x_batt", 0) * 1000, 1),
-                        "Posizione_Batteria_Valida": bool(w.get("is_batt_valid", True))
+            "Posizione_Batteria_Suggerita_mm": round(w.get("x_batt_suggested", 0) * 1000, 1),
         }
     }
     
     report = {
         "Riepilogo": {
             "Peso_Totale_g": round(w["m_tot"] * 1000, 1),
-            "Carico_Alare_g_dm2": round((w["m_tot"] * 1000) / (geo["S"] * 100), 1),
             "Velocita_Stallo_kmh": round(aero["Vs"] * 3.6, 1),
-            "Efficienza_Massima_L_D": round(aero.get("L_D_max", 0), 1),
+            "Autonomia_min": round(perf.get("endurance_h", 0) * 60, 1),
             "Potenza_Crociera_W": round(perf.get("P_req", 0), 1)
-        },
-        "Verifiche_Strutturali": {
-            "Sforzo_Applicato_MPa": round(struct.get("sigma_applied", 0) / 1e6, 2),
-            "Margine_Resistenza": round(struct.get("MS_strength", 0), 2),
-            "Margine_Buckling": round(struct.get("MS_buckling", 0), 2),
-            "Margine_Delaminazione": round(struct.get("MS_delam", 0), 2),
-            "Massa_Guscio_e_Reticolo_g": round(struct.get("m_wing", 0) * 1000, 1),
-            "Massa_Tubo_Carbonio_g": round(struct.get("m_carb_tube", 0.0) * 1000, 1)
-        },
-        "Verifiche_Stabilita": {
-            "Cl_beta_Effetto_Diedro": round(lat.get("Cl_beta", 0.0), 4),
-            "Cn_beta_Effetto_Banderuola": round(lat.get("Cn_beta", 0.0), 4),
-            "Volume_Coda_Verticale_V_V": round(lat.get("V_V", 0.0), 3)
         },
         "Vincoli_Progetto": {
             "Progetto_Valido": bool(cons.get("is_valid", True)),

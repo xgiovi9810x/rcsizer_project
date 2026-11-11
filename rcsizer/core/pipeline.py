@@ -106,7 +106,7 @@ class Pipeline:
     def _run_fixed_point(self, state: DesignState, loop: LoopConfig) -> DesignState:
         prev_vals: dict[str, float] = {}
         for it in range(loop.max_iter):
-            # FIX P1 - B4: Pulisce i warning vecchi prima di ogni giro
+            # Pulisce i warning vecchi
             state = state.model_copy(update={"warnings": ()})
             
             state = self.run_once(state).with_iteration(it)
@@ -115,9 +115,25 @@ class Pipeline:
                 v = self._read_var(state, var)
                 if isinstance(v, (int, float)):
                     cur_vals[var] = float(v)
+            
+            # FIX: Sotto-rilassamento (Under-relaxation)
+            # Se il peso calcolato è troppo diverso dal precedente, ne facciamo la media (50%)
+            # per evitare che il calcolo esploda all'infinito (inf)
+            if it > 0 and "weights.W" in cur_vals and "weights.W" in prev_vals:
+                W_old = prev_vals["weights.W"]
+                W_new = cur_vals["weights.W"]
+                W_relaxed = W_old + 0.5 * (W_new - W_old)
+                
+                # Iniettiamo il peso rilassato nello stato per la prossima iterazione
+                state = state.with_derived("weights", W=W_relaxed)
+                cur_vals["weights.W"] = W_relaxed
+            
+            # Controllo di convergenza
             if it > 0 and self._converged(prev_vals, cur_vals, loop.tolerance):
                 return state
+                
             prev_vals = cur_vals
+            
         state = state.with_warning(Warning(
             code="pipeline.max_iter",
             severity="warning",
